@@ -14,11 +14,12 @@
 // sample rate for a 20ms chunk
 int sampleChunk = 16000/50;
 int sampleRateDivisor;
+int sampleRate = 16000;
 
 
 int time_to_frequency(frequencyData * frequency, sound audio) {
 
-	sampleRateDivisor = ceil((float)audio.sampleRate / 16000);
+	sampleRateDivisor = ceil((float)audio.sampleRate / sampleRate);
 
 	double *in;
 	in = (double *)fftw_malloc(sizeof(double) * sampleChunk);
@@ -74,34 +75,34 @@ int main()
 
 	frequencyData * frequency;
 	sound audio = Read("C:/Mega/Programming/SpeakerRec/Samples/president-is-moron.wav");
-	int sampleRateDivisor = ceil((float)audio.sampleRate / 16000);
+	int sampleRateDivisor = ceil((float)audio.sampleRate / sampleRate);
 	frequency = (frequencyData *)fftw_malloc(sizeof(frequencyData) * audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor)));
 
 	time_to_frequency(frequency, audio);
 
 	frequencyData * frequency2;
 	sound audio2 = Read("C:/Mega/Programming/SpeakerRec/Samples/172213__acclivity__merrychristmasdarling.wav");
-	int sampleRateDivisor2 = ceil((float)audio2.sampleRate / 16000);
+	int sampleRateDivisor2 = ceil((float)audio2.sampleRate / sampleRate);
 	frequency2 = (frequencyData *)fftw_malloc(sizeof(frequencyData) * audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor2)));
 
 	time_to_frequency(frequency2, audio2);
 
 	frequencyData * frequency3;
 	sound audio3 = Read("C:/Mega/Programming/SpeakerRec/Samples/LDC1996S36.wav");
-	int sampleRateDivisor3 = ceil((float)audio3.sampleRate / 16000);
+	int sampleRateDivisor3 = ceil((float)audio3.sampleRate / sampleRate);
 	frequency3 = (frequencyData *)fftw_malloc(sizeof(frequencyData) * audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor3)));
 
 	time_to_frequency(frequency3, audio3);
 
 	frequencyData * frequency4;
 	sound audio4 = Read("C:/Mega/Programming/SpeakerRec/Samples/oh-yeah-everything-is-fine.wav");
-	int sampleRateDivisor4 = ceil((float)audio4.sampleRate / 16000);
+	int sampleRateDivisor4 = ceil((float)audio4.sampleRate / sampleRate);
 	frequency4 = (frequencyData *)fftw_malloc(sizeof(frequencyData) * audio4.totalItems / (sampleChunk * (audio4.channels * sampleRateDivisor4)));
 
 	time_to_frequency(frequency4, audio4);
 
 	networkLayout network = networkLayout();
-	/**
+	
 	std::vector<int> numNeurons = std::vector<int>(3);
 
 	numNeurons[0] = sampleChunk / 2;
@@ -131,52 +132,26 @@ int main()
 
 	for (int i = 0; i < 100; i++) {
 		
-		sampleRateDivisor = ceil((float)audio.sampleRate / 16000);
-		network = train_network(network, frequency, sampleChunk, 0,(audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor))/3), correctOutputs1);
+		sampleRateDivisor = ceil((float)audio.sampleRate / sampleRate);
+		network = train_network(network, frequency, sampleChunk, 0,(audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor))), correctOutputs1);
 
 		
 		
-		sampleRateDivisor = ceil((float)audio2.sampleRate / 16000);
-		network = train_network(network, frequency2, sampleChunk, 0,audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor))/3, correctOutputs2);
+		sampleRateDivisor = ceil((float)audio2.sampleRate / sampleRate);
+		network = train_network(network, frequency2, sampleChunk, 0,audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor)), correctOutputs2);
 
 		
 		
-		sampleRateDivisor = ceil((float)audio3.sampleRate / 16000);
-		network = train_network(network, frequency3, sampleChunk,0, audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor))/3, correctOutputs3);
-
-		sampleRateDivisor = ceil((float)audio.sampleRate / 16000);
-		network = train_network(network, frequency, sampleChunk, audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor)) / 3, 2*(audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor))) / 3, correctOutputs1);
-
-
-
-		sampleRateDivisor = ceil((float)audio2.sampleRate / 16000);
-		network = train_network(network, frequency2, sampleChunk, audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor)) / 3, 2*(audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor))) / 3, correctOutputs2);
-
-
-
-		sampleRateDivisor = ceil((float)audio3.sampleRate / 16000);
-		network = train_network(network, frequency3, sampleChunk, audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor)) / 3, 2*(audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor))) / 3, correctOutputs3);
-
-		sampleRateDivisor = ceil((float)audio.sampleRate / 16000);
-		network = train_network(network, frequency, sampleChunk, 2*(audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor))) / 3, (audio.totalItems / (sampleChunk * (audio.channels * sampleRateDivisor))), correctOutputs1);
-
-
-
-		sampleRateDivisor = ceil((float)audio2.sampleRate / 16000);
-		network = train_network(network, frequency2, sampleChunk, 2*(audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor))) / 3, (audio2.totalItems / (sampleChunk * (audio2.channels * sampleRateDivisor))), correctOutputs2);
-
-
-
-		sampleRateDivisor = ceil((float)audio3.sampleRate / 16000);
-		network = train_network(network, frequency3, sampleChunk, 2*(audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor))) / 3, (audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor))), correctOutputs3);
+		sampleRateDivisor = ceil((float)audio3.sampleRate / sampleRate);
+		network = train_network(network, frequency3, sampleChunk,0, audio3.totalItems / (sampleChunk * (audio3.channels * sampleRateDivisor)), correctOutputs3);
 
 				
 	}
 	
 	saveTrained(network);
-	**/
+	
 
-	network = loadTrained("");
+	//network = loadTrained("");
 	network = forward_step(network, frequency[10].magnitude);
 	float result = network.layers[2].outputs(0);
 	float result2 = network.layers[2].outputs(1);
