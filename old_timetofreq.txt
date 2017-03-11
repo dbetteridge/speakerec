@@ -1,0 +1,57 @@
+static int sampleChunk = 16000/50;
+
+
+
+
+
+
+int time_to_frequency(frequencyData * frequency, sound audio) {
+
+	int sampleRateDivisor = ceil((float)audio.sampleRate / 16000);
+	double *in;
+	in = (double *)fftw_malloc(sizeof(double) * audio.sampleRate / 50);
+	short * items;
+	items = (short *)fftw_malloc(sizeof(short) * audio.totalItems / 2);
+	short * sampledItems;
+	sampledItems = (short *)fftw_malloc(sizeof(short) * audio.totalItems / 2 * sampleRateDivisor);
+
+	for (int k = 0; k < audio.totalItems / 2; k += audio.channels *sampleRateDivisor) {
+		if (k == 0) {
+			sampledItems[k] = audio.audioItems[k];
+		}
+		sampledItems[(k - (audio.channels * sampleRateDivisor)) + 1] = audio.audioItems[k];
+	}
+
+	for (int j = 0; j < audio.totalItems / (2 * sampleRateDivisor); j++) {
+
+		for (int i = 0; i < sampleChunk; i++) {
+			float index = (float)j * (float)(sampleChunk)+i;
+
+			if (index < audio.totalItems / 2 * sampleRateDivisor) {
+				in[i] = sampledItems[(int)index];
+			}
+		}
+
+		fftw_complex *out;
+		out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) *sampleChunk);
+		int dimension = ((int)sampleChunk);
+		fftw_plan p;
+		p = fftw_plan_dft_r2c_1d(dimension, in, out, FFTW_ESTIMATE);
+		if (p != NULL) {
+			fftw_execute(p);
+
+			frequency[j].frequency = (int *)fftw_malloc(sizeof(int) *sampleChunk / 2);
+			frequency[j].magnitude = (double *)fftw_malloc(sizeof(fftw_complex) * sampleChunk / 2);
+			for (int i = 0; i < (float)sampleChunk / 2; i++) {
+				frequency[j].frequency[i] = i * 50;
+				frequency[j].magnitude[i] = abs(out[i][0]);
+			}
+			frequency[j].segmentStart = j * sampleChunk;
+			frequency[j].segmentEnd = (j + 1) * sampleChunk;
+		}
+		fftw_free(out);
+		fftw_free(p);
+	}
+
+	return 0;
+}
